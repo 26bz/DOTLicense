@@ -1,0 +1,237 @@
+// I need to update what is not required and what is strictly required 
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  EXPIRED
+  TRIAL
+}
+
+model User {
+  id                      Int       @id @default(autoincrement())
+  name                    String
+  email                   String    @unique
+  password                String
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  dateOfBirth             DateTime
+  role                    Role      @default(USER)
+  emailVerified           Boolean   @default(false)
+  emailVerificationToken  String?
+  emailVerificationExpiry DateTime?
+  passwordResetToken      String?
+  passwordResetExpiry     DateTime?
+  emailVerifiedAt         DateTime?
+  lastLoginAt             DateTime?
+  isPermitted             Boolean   @default(true)
+  country                 String?
+
+  cart          Cart?
+  subscriptions Subscription[]
+  downloads     Download[]
+  purchases     Purchase[]
+  licenses      License[]
+  Review        Review[]
+  session       Session[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  icon        String?
+  products    Product[]
+}
+
+model Product {
+  id                   String         @id @default(cuid())
+  slug                 String         @unique
+  name                 String
+  description          String
+  shortDescription     String?
+  coverImage           String?
+  tags                 String
+  version              String         @default("1.0.0")
+  downloadCount        Int            @default(0)
+  purchaseCount        Int            @default(0)
+  isActive             Boolean        @default(true)
+  isFeatured           Boolean        @default(false)
+  fileSize             Int?
+  changeLog            String?
+  isOneTime            Boolean        @default(true)
+  isSubscription       Boolean        @default(false)
+  subscriptionInterval String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  price                Int
+  fileUrl              String
+  fileName             String?
+  mimeType             String?
+  category             Category?      @relation(fields: [categoryId], references: [id])
+  categoryId           String
+  purchase             Purchase[]
+  license              License[]
+  reviews              Review[]
+  cartItems            CartItem[]
+  subscriptions        Subscription[]
+  downloads            Download[]
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([isActive])
+  @@index([isFeatured])
+  @@index([createdAt])
+}
+
+model Cart {
+  id        String   @id @default(cuid())
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User       @relation(fields: [userId], references: [id])
+  items CartItem[]
+
+  @@unique([userId])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  productId String
+  quantity  Int      @default(1)
+  addedAt   DateTime @default(now())
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Purchase {
+  id            String    @id @default(cuid())
+  userId        Int
+  productId     String
+  stripeId      String    @unique
+  amount        Int
+  status        String    @default("Pending")
+  createdAt     DateTime  @default(now())
+  currency      String    @default("USD")
+  paymentMethod String
+  refunded      Boolean   @default(false)
+  refundedAt    DateTime?
+  refundAmount  Int?
+  completedAt   DateTime?
+
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([userId])
+  @@index([productId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  userId               Int
+  productId            String
+  stripeSubscriptionId String   @unique
+  status               String
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model License {
+  id              String     @id @default(cuid())
+  code            String     @unique
+  userId          Int
+  productId       String
+  issuedAt        DateTime   @default(now())
+  expiresAt       DateTime?
+  revoked         Boolean    @default(false)
+  type            String     @default("STANDARD")
+  activationCount Int        @default(0)
+  maxActivations  Int        @default(1)
+  downloads       Download[]
+  user            User       @relation(fields: [userId], references: [id])
+  product         Product    @relation(fields: [productId], references: [id])
+
+  @@index([userId])
+  @@index([productId])
+  @@index([code])
+  @@index([revoked])
+}
+
+model Download {
+  id        String   @id @default(cuid())
+  userId    Int
+  productId String
+  licenseId String
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+  license License @relation(fields: [licenseId], references: [id])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String?
+  userId    Int
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([userId, productId])
+}
+
+model Session {
+  id        String    @id @default(cuid())
+  userId    Int
+  token     String    @unique
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+  revokedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+}
