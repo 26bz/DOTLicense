@@ -56,7 +56,7 @@
 <template>
   <div class="max-w-7xl mx-auto">
     <UTabs :items="items" variant="link" :ui="{ trigger: 'grow' }" class="gap-4 w-full">
-      <template #overview="{ item }">
+      <template #overview>
         <div class="space-y-4">
           <h1 class="text-xl font-bold flex-1">Welcome Back, {{ user?.name }}</h1>
           <p class="text-gray-500">{{ user?.email }}</p>
@@ -121,7 +121,7 @@
         </div>
       </template>
 
-      <template #settings="{ item }">
+      <template #settings>
         <UForm :state="state" class="flex flex-col gap-4 mt-6">
           <UFormField label="Current Password" name="current" required>
             <UInput v-model="state.currentPassword" type="password" required class="w-full" />

@@ -42,10 +42,9 @@
 </template>
 
 <script setup lang="ts">
-  import type { NavigationMenuItem } from '@nuxt/ui';
+  import type { NavigationMenuItem, FormSubmitEvent  } from '@nuxt/ui';
   import * as z from 'zod';
-  import type { FormSubmitEvent } from '@nuxt/ui';
-
+  
   const schema = z.object({
     email: z.string().email('Invalid email'),
     password: z.string().min(8, 'Must be at least 8 characters'),

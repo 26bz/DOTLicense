@@ -23,6 +23,6 @@
     orientation="horizontal"
     :links="links"
   >
-    <img src="https://placehold.co/600x400" alt="App screenshot" class="rounded-lg shadow-2xl ring ring-default" />
+    <img src="https://placehold.co/600x400" alt="App screenshot" class="rounded-lg shadow-2xl ring ring-default" >
   </UPageHero>
 </template>
