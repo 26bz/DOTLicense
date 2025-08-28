@@ -3,9 +3,9 @@
     <UNavigationMenu :items="items" />
     <template #right>
       <AuthState>
-        <template #default="{ loggedIn, clear }">
+        <template #default="{ loggedIn }">
           <UModal>
-            <UButton variant="ghost" color="neutral" icon="material-symbols:logout" v-if="loggedIn" @click="clear" />
+            <UButton variant="ghost" color="neutral" icon="material-symbols:logout" v-if="loggedIn" @click="logout" />
             <UButton variant="ghost" color="neutral" v-else>Login</UButton>
 
             <template #content>
@@ -43,7 +43,6 @@
 <script setup lang="ts">
   import type { NavigationMenuItem, FormSubmitEvent } from '@nuxt/ui';
   import * as z from 'zod';
-
   const schema = z.object({
     email: z.string().email('Invalid email'),
     password: z.string().min(8, 'Must be at least 8 characters'),
@@ -80,6 +79,11 @@
       active: route.path.startsWith('/help-center'),
     },
   ]);
+  async function logout() {
+    const { clear } = useUserSession();
+    await clear();
+    await navigateTo('/');
+  }
   async function onSubmit(event: FormSubmitEvent<Schema>) {
     try {
       const user = await $fetch('/api/auth/login', {
