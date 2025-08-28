@@ -1,4 +1,7 @@
 <script setup lang="ts">
+  definePageMeta({
+    layout: 'dashboard',
+  });
   const { user } = useUserSession();
 
   const userStats = [
