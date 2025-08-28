@@ -1,10 +1,5 @@
 <script setup lang="ts">
   const { user } = useUserSession();
-  
-  definePageMeta({
-    middleware: ['auth'],
-    layout: 'dashboard',
-  });
 
   const userStats = [
     {
