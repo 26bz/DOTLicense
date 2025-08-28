@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { AccordionItem } from '@nuxt/ui';
+  import type { AccordionItem } from '@nuxt/ui'
 
   const items = ref<AccordionItem[]>([
     {
@@ -18,7 +18,7 @@
       icon: 'i-lucide-box',
       content: 'You can customize components by using the `class` / `ui` props or in your app.config.ts.',
     },
-  ]);
+  ])
 
   const features = ref([
     {
@@ -39,7 +39,7 @@
       icon: 'i-lucide-sun-moon',
       to: '/docs/getting-started/color-mode',
     },
-  ]);
+  ])
 </script>
 
 <template>

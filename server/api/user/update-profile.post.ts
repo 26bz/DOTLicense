@@ -1,11 +1,11 @@
-import { z } from 'zod';
-import prisma from '~~/lib/prisma';
+import { z } from 'zod'
+import prisma from '~~/lib/prisma'
 
 const schema = z.object({
   name: z.string().min(2),
   userName: z.string().min(5, 'Username is required'),
   email: z.string().email(),
-  dateOfBirth: z.string().refine((val) => !isNaN(Date.parse(val)), {
+  dateOfBirth: z.string().refine(val => !isNaN(Date.parse(val)), {
     message: 'Invalid date format',
   }),
   street: z.string().optional(),
@@ -14,15 +14,15 @@ const schema = z.object({
   zipCode: z.string().optional(),
   country: z.string().optional(),
   newsletterSubscribed: z.boolean().optional(),
-});
+})
 
-export default defineEventHandler(async (event) => {
-  const session = await requireUserSession(event);
+export default defineEventHandler(async event => {
+  const session = await requireUserSession(event)
 
-  const body = await readBody(event);
-  const data = schema.parse(body);
+  const body = await readBody(event)
+  const data = schema.parse(body)
 
-  await authorize(event, updateUser, session.user, session.user);
+  await authorize(event, updateUser, session.user, session.user)
 
   const updatedUser = await prisma.user.update({
     where: { id: session.user.id },
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
       country: data.country,
       newsletterSubscribed: data.newsletterSubscribed,
     },
-  });
+  })
 
   await setUserSession(event, {
     ...session,
@@ -55,6 +55,6 @@ export default defineEventHandler(async (event) => {
       country: updatedUser.country,
       newsletterSubscribed: updatedUser.newsletterSubscribed,
     },
-  });
-  return { user: updatedUser };
-});
+  })
+  return { user: updatedUser }
+})

@@ -1,22 +1,22 @@
-import { z } from 'zod';
-import prisma from '~~/lib/prisma';
+import { z } from 'zod'
+import prisma from '~~/lib/prisma'
 
 const schema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(6),
-  dateOfBirth: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid date format' }),
-});
-export default defineEventHandler(async (event) => {
-  const body = await readBody(event);
-  const { name, email, dateOfBirth, password } = schema.parse(body);
+  dateOfBirth: z.string().refine(val => !isNaN(Date.parse(val)), { message: 'Invalid date format' }),
+})
+export default defineEventHandler(async event => {
+  const body = await readBody(event)
+  const { name, email, dateOfBirth, password } = schema.parse(body)
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {
-    throw createError({ statusCode: 400, statusMessage: 'Email already registered' });
+    throw createError({ statusCode: 400, statusMessage: 'Email already registered' })
   }
 
-  const hashedPassword = await hashPassword(password);
+  const hashedPassword = await hashPassword(password)
 
   const user = await prisma.user.create({
     data: {
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
       dateOfBirth: new Date(dateOfBirth),
       password: hashedPassword,
     },
-  });
+  })
 
   await setUserSession(event, {
     user: {
@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
       role: user.role,
     },
     loggedInAt: new Date(),
-  });
+  })
 
   return {
     success: true,
@@ -45,5 +45,5 @@ export default defineEventHandler(async (event) => {
       email: user.email,
       name: user.name,
     },
-  };
-});
+  }
+})

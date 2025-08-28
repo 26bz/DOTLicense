@@ -1,8 +1,8 @@
 <script setup lang="ts">
   definePageMeta({
     layout: 'dashboard',
-  });
-  const { user } = useUserSession();
+  })
+  const { user } = useUserSession()
 
   const userStats = [
     {
@@ -20,7 +20,7 @@
       value: '12',
       icon: 'i-lucide-box',
     },
-  ];
+  ]
 </script>
 
 <template>

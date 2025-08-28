@@ -8,6 +8,6 @@ export default defineNuxtPlugin({
           resolveClientUser: () => useUserSession().user.value,
         },
       },
-    };
+    }
   },
-});
+})

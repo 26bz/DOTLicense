@@ -41,13 +41,13 @@
 </template>
 
 <script setup lang="ts">
-  import type { NavigationMenuItem } from '@nuxt/ui';
-  import AppFooter from '~/components/ui/AppFooter.vue';
-  import AppHeader from '~/components/ui/AppHeader.vue';
+  import type { NavigationMenuItem } from '@nuxt/ui'
+  import AppFooter from '~/components/ui/AppFooter.vue'
+  import AppHeader from '~/components/ui/AppHeader.vue'
 
   definePageMeta({
     layout: 'dashboard',
-  });
+  })
 
   const items: NavigationMenuItem[][] = [
     [
@@ -79,5 +79,5 @@
         to: '/dashboard/settings',
       },
     ],
-  ];
+  ]
 </script>

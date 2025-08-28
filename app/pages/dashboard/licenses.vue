@@ -24,12 +24,12 @@
 </template>
 
 <script lang="ts" setup>
-  const { data, pending } = useFetch('/api/user/licenses');
-  const licenses = computed(() => data.value?.licenses || []);
+  const { data, pending } = useFetch('/api/user/licenses')
+  const licenses = computed(() => data.value?.licenses || [])
 
   definePageMeta({
     layout: 'dashboard',
-  });
+  })
 </script>
 
 <style></style>

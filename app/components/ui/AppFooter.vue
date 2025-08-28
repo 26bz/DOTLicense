@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-  import type { FooterColumn } from '@nuxt/ui';
+  import type { FooterColumn } from '@nuxt/ui'
 
   const columns: FooterColumn[] = [
     {
@@ -46,5 +46,5 @@
         },
       ],
     },
-  ];
+  ]
 </script>

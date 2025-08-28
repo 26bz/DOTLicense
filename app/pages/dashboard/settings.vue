@@ -3,7 +3,7 @@
     <div class="text-lg font-semibold">
       <h1>Profile Settings</h1>
     </div>
-    <UForm :schema="profileSchema" :state="profileState" @submit="updateProfile" class="flex flex-col gap-4 mt-6">
+    <UForm :schema="profileSchema" :state="profileState" class="flex flex-col gap-4 mt-6" @submit="updateProfile">
       <UFormField label="Name" name="name" required>
         <UInput v-model="profileState.name" required class="w-full" />
       </UFormField>
@@ -66,7 +66,7 @@
     <div class="text-lg font-semibold">
       <h1>Change Password</h1>
     </div>
-    <UForm :schema="passwordSchema" :state="passwordState" @submit="changePassword" class="flex flex-col gap-4 mt-6">
+    <UForm :schema="passwordSchema" :state="passwordState" class="flex flex-col gap-4 mt-6" @submit="changePassword">
       <UFormField label="Current Password" name="currentPassword" required>
         <UInput v-model="passwordState.currentPassword" type="password" required class="w-full" />
       </UFormField>
@@ -96,17 +96,17 @@
 </template>
 
 <script lang="ts" setup>
-  import * as z from 'zod';
-  import type { FormSubmitEvent } from '@nuxt/ui';
-  import { CalendarDate, getLocalTimeZone } from '@internationalized/date';
+  import * as z from 'zod'
+  import type { FormSubmitEvent } from '@nuxt/ui'
+  import { CalendarDate, getLocalTimeZone } from '@internationalized/date'
 
   definePageMeta({
     layout: 'dashboard',
-  });
+  })
 
-  const { fetch: fetchSession } = useUserSession();
+  const { fetch: fetchSession } = useUserSession()
 
-  const { data: userData } = await useFetch('/api/user/me');
+  const { data: userData } = await useFetch('/api/user/me')
 
   const profileSchema = z.object({
     name: z.string().min(2, 'Name is required'),
@@ -119,9 +119,9 @@
     zipCode: z.string().optional(),
     country: z.string().optional(),
     newsletterSubscribed: z.boolean().optional(),
-  });
+  })
 
-  type ProfileSchema = z.output<typeof profileSchema>;
+  type ProfileSchema = z.output<typeof profileSchema>
 
   const passwordSchema = z
     .object({
@@ -129,18 +129,22 @@
       newPassword: z.string().min(8, 'Must be atleast 8 characters'),
       confirmPassword: z.string().min(8),
     })
-    .refine((data) => data.newPassword === data.confirmPassword, {
+    .refine(data => data.newPassword === data.confirmPassword, {
       message: 'Passwords do not match',
       path: ['confirmPassword'],
-    });
-  type PasswordSchema = z.output<typeof passwordSchema>;
+    })
+  type PasswordSchema = z.output<typeof passwordSchema>
 
   const profileState = reactive<Partial<ProfileSchema>>({
     name: userData.value?.user?.name,
     userName: userData.value?.user?.userName,
     email: userData.value?.user?.email,
     dateOfBirth: userData.value?.user?.dateOfBirth
-      ? new CalendarDate(new Date(userData.value.user.dateOfBirth).getFullYear(), new Date(userData.value.user.dateOfBirth).getMonth() + 1, new Date(userData.value.user.dateOfBirth).getDate())
+      ? new CalendarDate(
+          new Date(userData.value.user.dateOfBirth).getFullYear(),
+          new Date(userData.value.user.dateOfBirth).getMonth() + 1,
+          new Date(userData.value.user.dateOfBirth).getDate()
+        )
       : null,
     street: userData.value?.user?.street || '',
     city: userData.value?.user?.city || '',
@@ -148,13 +152,13 @@
     zipCode: userData.value?.user?.zipCode || '',
     country: userData.value?.user?.country || '',
     newsletterSubscribed: userData.value?.user?.newsletterSubscribed || false,
-  });
+  })
   const passwordState = reactive<Partial<PasswordSchema>>({
     currentPassword: undefined,
     newPassword: undefined,
     confirmPassword: undefined,
-  });
-  const toast = useToast();
+  })
+  const toast = useToast()
 
   async function updateProfile(event: FormSubmitEvent<ProfileSchema>) {
     try {
@@ -164,12 +168,12 @@
           ...event.data,
           dateOfBirth: event.data.dateOfBirth?.toDate(getLocalTimeZone()).toISOString(),
         },
-      });
-      await fetchSession();
-      toast.add({ title: 'Profile updated', color: 'success' });
+      })
+      await fetchSession()
+      toast.add({ title: 'Profile updated', color: 'success' })
     } catch (err) {
-      console.error(err);
-      toast.add({ title: 'Failed to update profile', color: 'error' });
+      console.error(err)
+      toast.add({ title: 'Failed to update profile', color: 'error' })
     }
   }
 
@@ -181,12 +185,12 @@
           currentPassword: event.data.currentPassword,
           newPassword: event.data.newPassword,
         },
-      });
-      toast.add({ title: 'Password changed', color: 'success' });
-      Object.assign(passwordState, { currentPassword: '', newPassword: '', confirmPassword: '' });
+      })
+      toast.add({ title: 'Password changed', color: 'success' })
+      Object.assign(passwordState, { currentPassword: '', newPassword: '', confirmPassword: '' })
     } catch (err) {
-      console.error(err);
-      toast.add({ title: 'Failed to change password', color: 'error' });
+      console.error(err)
+      toast.add({ title: 'Failed to change password', color: 'error' })
     }
   }
 </script>

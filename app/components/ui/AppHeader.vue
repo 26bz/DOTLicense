@@ -5,8 +5,8 @@
       <AuthState>
         <template #default="{ loggedIn }">
           <UModal>
-            <UButton variant="ghost" color="neutral" icon="material-symbols:logout" v-if="loggedIn" @click="logout" />
-            <UButton variant="ghost" color="neutral" v-else>Login</UButton>
+            <UButton v-if="loggedIn" variant="ghost" color="neutral" icon="material-symbols:logout" @click="logout" />
+            <UButton v-else variant="ghost" color="neutral">Login</UButton>
 
             <template #content>
               <div class="flex p-4 gap-1">
@@ -41,22 +41,22 @@
 </template>
 
 <script setup lang="ts">
-  import type { NavigationMenuItem, FormSubmitEvent } from '@nuxt/ui';
-  import * as z from 'zod';
+  import type { NavigationMenuItem, FormSubmitEvent } from '@nuxt/ui'
+  import * as z from 'zod'
   const schema = z.object({
     email: z.string().email('Invalid email'),
     password: z.string().min(8, 'Must be at least 8 characters'),
-  });
+  })
 
-  type Schema = z.output<typeof schema>;
+  type Schema = z.output<typeof schema>
 
   const state = reactive<Partial<Schema>>({
     email: undefined,
     password: undefined,
-  });
+  })
 
-  const toast = useToast();
-  const route = useRoute();
+  const toast = useToast()
+  const route = useRoute()
   const items = computed<NavigationMenuItem[]>(() => [
     {
       label: 'Home',
@@ -78,28 +78,28 @@
       to: '/help-center',
       active: route.path.startsWith('/help-center'),
     },
-  ]);
+  ])
   async function logout() {
-    const { clear } = useUserSession();
-    await clear();
-    await navigateTo('/');
+    const { clear } = useUserSession()
+    await clear()
+    await navigateTo('/')
   }
   async function onSubmit(event: FormSubmitEvent<Schema>) {
     try {
       const user = await $fetch('/api/auth/login', {
         method: 'POST',
         body: event.data,
-      });
+      })
 
-      toast.add({ title: 'Success', description: 'Logged in successfully', color: 'success' });
+      toast.add({ title: 'Success', description: 'Logged in successfully', color: 'success' })
 
-      console.log('Logged in user:', user);
+      console.log('Logged in user:', user)
 
-      close();
-      await navigateTo('/dashboard');
+      close()
+      await navigateTo('/dashboard')
     } catch (err) {
-      toast.add({ title: 'Error', description: 'Login failed. Please try again', color: 'error' });
-      console.error(err);
+      toast.add({ title: 'Error', description: 'Login failed. Please try again', color: 'error' })
+      console.error(err)
     }
   }
 </script>

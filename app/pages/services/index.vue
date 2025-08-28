@@ -9,7 +9,7 @@
         label: 'Buy now',
       },
     },
-  ]);
+  ])
 </script>
 
 <template>
