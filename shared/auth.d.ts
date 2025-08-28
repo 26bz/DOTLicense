@@ -7,6 +7,12 @@ declare module '#auth-utils' {
     dateOfBirth: Date;
     emailVerified: boolean;
     isPermitted: boolean;
+    street?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+    newsletterSubscribed?: boolean;
   }
 
   interface UserSession {

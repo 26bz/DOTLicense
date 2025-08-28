@@ -23,13 +23,47 @@
           </template>
         </UPopover>
       </UFormField>
+      <USeparator class="my-4" />
+      <div class="text-md font-medium mb-4">Address Information</div>
+
+      <UFormField label="Street Address" name="street">
+        <UInput v-model="profileState.street" class="w-full" />
+      </UFormField>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <UFormField label="City" name="city">
+          <UInput v-model="profileState.city" class="w-full" />
+        </UFormField>
+        <UFormField label="State/Province" name="state">
+          <UInput v-model="profileState.state" class="w-full" />
+        </UFormField>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <UFormField label="ZIP/Postal Code" name="zipCode">
+          <UInput v-model="profileState.zipCode" class="w-full" />
+        </UFormField>
+        <UFormField label="Country" name="country">
+          <UInput v-model="profileState.country" class="w-full" />
+        </UFormField>
+      </div>
+
+      <USeparator class="my-4" />
+      <div class="text-md font-medium mb-4">Preferences</div>
+
+      <UFormField label="Newsletter Subscription" name="newsletterSubscribed">
+        <div class="flex items-center gap-3">
+          <UCheckbox v-model="profileState.newsletterSubscribed" />
+          <span class="text-sm text-gray-600">Subscribe to our newsletter for updates and news</span>
+        </div>
+      </UFormField>
       <UButton label="Update Profile" type="submit" variant="soft" class="self-end" />
     </UForm>
     <USeparator class="py-6" />
     <div class="text-lg font-semibold">
       <h1>Change Password</h1>
     </div>
-    <UForm :schema="passwordSchema" :state="passwordState" @sumbit="changePassword" class="flex flex-col gap-4 mt-6">
+    <UForm :schema="passwordSchema" :state="passwordState" @submit="changePassword" class="flex flex-col gap-4 mt-6">
       <UFormField label="Current Password" name="currentPassword" required>
         <UInput v-model="passwordState.currentPassword" type="password" required class="w-full" />
       </UFormField>
@@ -42,6 +76,19 @@
 
       <UButton label="Change password" type="submit" variant="soft" class="self-end" />
     </UForm>
+    <USeparator class="py-6" />
+    <div class="text-lg font-semibold">
+      <h1>Danger Zone</h1>
+    </div>
+    <UCard class="mt-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <h3 class="text-lg font-medium text-red-900">Delete Account</h3>
+          <p class="text-sm text-red-700 mt-1">Permanently delete your account and all associated data. This action cannot be undone.</p>
+        </div>
+        <UButton label="Contact Support" color="error" variant="soft" disabled class="ml-4" />
+      </div>
+    </UCard>
   </UContainer>
 </template>
 
@@ -62,6 +109,12 @@
     name: z.string().min(2, 'Name is required'),
     email: z.string().email('Invalid Email'),
     dateOfBirth: z.any().nullable(),
+    street: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    zipCode: z.string().optional(),
+    country: z.string().optional(),
+    newsletterSubscribed: z.boolean().optional(),
   });
 
   type ProfileSchema = z.output<typeof profileSchema>;
@@ -84,6 +137,12 @@
     dateOfBirth: userData.value?.user?.dateOfBirth
       ? new CalendarDate(new Date(userData.value.user.dateOfBirth).getFullYear(), new Date(userData.value.user.dateOfBirth).getMonth() + 1, new Date(userData.value.user.dateOfBirth).getDate())
       : null,
+    street: userData.value?.user?.street || '',
+    city: userData.value?.user?.city || '',
+    state: userData.value?.user?.state || '',
+    zipCode: userData.value?.user?.zipCode || '',
+    country: userData.value?.user?.country || '',
+    newsletterSubscribed: userData.value?.user?.newsletterSubscribed || false,
   });
   const passwordState = reactive<Partial<PasswordSchema>>({
     currentPassword: undefined,
@@ -94,7 +153,7 @@
 
   async function updateProfile(event: FormSubmitEvent<ProfileSchema>) {
     try {
-      await $fetch('/api/user/update', {
+      await $fetch('/api/user/update-profile', {
         method: 'POST',
         body: {
           ...event.data,

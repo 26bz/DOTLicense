@@ -7,6 +7,12 @@ const schema = z.object({
   dateOfBirth: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: 'Invalid date format',
   }),
+  street: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zipCode: z.string().optional(),
+  country: z.string().optional(),
+  newsletterSubscribed: z.boolean().optional(),
 });
 
 export default defineEventHandler(async (event) => {
@@ -23,6 +29,12 @@ export default defineEventHandler(async (event) => {
       name: data.name,
       email: data.email,
       dateOfBirth: new Date(data.dateOfBirth),
+      street: data.street,
+      city: data.city,
+      state: data.state,
+      zipCode: data.zipCode,
+      country: data.country,
+      newsletterSubscribed: data.newsletterSubscribed,
     },
   });
 
@@ -33,6 +45,12 @@ export default defineEventHandler(async (event) => {
       name: updatedUser.name,
       email: updatedUser.email,
       dateOfBirth: updatedUser.dateOfBirth,
+      street: updatedUser.street,
+      city: updatedUser.city,
+      state: updatedUser.state,
+      zipCode: updatedUser.zipCode,
+      country: updatedUser.country,
+      newsletterSubscribed: updatedUser.newsletterSubscribed,
     },
   });
   return { user: updatedUser };

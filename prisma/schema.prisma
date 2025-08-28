@@ -44,7 +44,12 @@ model User {
   emailVerifiedAt         DateTime?
   lastLoginAt             DateTime?
   isPermitted             Boolean   @default(true)
+  street                  String?
+  city                    String?
+  state                   String?
+  zipCode                 String?
   country                 String?
+  newsletterSubscribed    Boolean   @default(false)
 
   cart          Cart?
   subscriptions Subscription[]
