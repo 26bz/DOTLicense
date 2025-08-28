@@ -7,6 +7,9 @@
       <UFormField label="Name" name="name" required>
         <UInput v-model="profileState.name" required class="w-full" />
       </UFormField>
+      <UFormField label="Username" name="userName" required>
+        <UInput v-model="profileState.userName" placeholder="Enter a username" required class="w-full" />
+      </UFormField>
       <UFormField label="Email" name="email" required>
         <UInput v-model="profileState.email" type="email" required class="w-full mb-1" />
         <span class="text-yellow-500">Email is not verified</span>
@@ -107,6 +110,7 @@
 
   const profileSchema = z.object({
     name: z.string().min(2, 'Name is required'),
+    userName: z.string().min(5, 'Username is required'),
     email: z.string().email('Invalid Email'),
     dateOfBirth: z.any().nullable(),
     street: z.string().optional(),
@@ -133,6 +137,7 @@
 
   const profileState = reactive<Partial<ProfileSchema>>({
     name: userData.value?.user?.name,
+    userName: userData.value?.user?.userName,
     email: userData.value?.user?.email,
     dateOfBirth: userData.value?.user?.dateOfBirth
       ? new CalendarDate(new Date(userData.value.user.dateOfBirth).getFullYear(), new Date(userData.value.user.dateOfBirth).getMonth() + 1, new Date(userData.value.user.dateOfBirth).getDate())

@@ -2,6 +2,7 @@ declare module '#auth-utils' {
   interface User {
     id: number;
     name: string;
+    userName: string;
     email: string;
     role: Role;
     dateOfBirth: Date;
