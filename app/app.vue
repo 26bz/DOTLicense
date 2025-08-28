@@ -1,21 +1,11 @@
 <template>
   <UApp>
     <UBanner icon="i-lucide-info" title="Subscribe to follow our latest events!" />
-    <AppHeader />
-    <UMain>
+    <NuxtLayout>
       <NuxtPage />
-    </UMain>
-
-    <UFooter>
-      <AppFooter />
-    </UFooter>
+    </NuxtLayout>
   </UApp>
 </template>
-
-<script setup lang="ts">
-  import AppFooter from './components/ui/AppFooter.vue';
-  import AppHeader from './components/ui/AppHeader.vue';
-</script>
 
 <style>
   .page-enter-active,
