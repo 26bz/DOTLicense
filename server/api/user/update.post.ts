@@ -4,7 +4,11 @@ import prisma from '~~/lib/prisma';
 const schema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
+  dateOfBirth: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: 'Invalid date format',
+  }),
 });
+
 export default defineEventHandler(async (event) => {
   const session = await requireUserSession(event);
 
@@ -18,6 +22,7 @@ export default defineEventHandler(async (event) => {
     data: {
       name: data.name,
       email: data.email,
+      dateOfBirth: new Date(data.dateOfBirth),
     },
   });
 
@@ -27,6 +32,7 @@ export default defineEventHandler(async (event) => {
       ...session.user,
       name: updatedUser.name,
       email: updatedUser.email,
+      dateOfBirth: updatedUser.dateOfBirth,
     },
   });
   return { user: updatedUser };

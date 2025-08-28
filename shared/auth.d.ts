@@ -4,6 +4,7 @@ declare module '#auth-utils' {
     name: string;
     email: string;
     role: Role;
+    dateOfBirth: Date;
     emailVerified: boolean;
     isPermitted: boolean;
   }
