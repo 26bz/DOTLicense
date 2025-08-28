@@ -7,29 +7,20 @@ const schema = z.object({
   newPassword: z.string().min(6),
 });
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event);
-  if (!session?.user)
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Unauthorized',
-    });
+  const session = await requireUserSession(event);
 
   const body = await readBody(event);
   const { currentPassword, newPassword } = schema.parse(body);
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findUniqueOrThrow({
     where: { id: session.user.id },
+    select: { id: true, password: true },
   });
-  if (!user)
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'User not found',
-    });
 
   const valid = await bcrypt.compare(currentPassword, user.password);
   if (!valid)
     throw createError({
-      statusCode: 401,
+      statusCode: 400,
       statusMessage: 'Invalid current password',
     });
 
