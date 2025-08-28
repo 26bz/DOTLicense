@@ -5,7 +5,6 @@
       <div class="flex items-center justify-between w-full max-w-7xl mx-auto">
         <UNavigationMenu :items="items" highlight class="flex-1" />
         <USlideover
-        
           title="Admin Navigation"
           :close="{
             color: 'neutral',
