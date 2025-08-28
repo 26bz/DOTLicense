@@ -1,13 +1,12 @@
 <template>
-  <UHeader title="DOTLicense">
+  <UHeader to="/" title="DOTLicense">
     <UNavigationMenu :items="items" />
-
     <template #right>
       <AuthState>
         <template #default="{ loggedIn, clear }">
           <UModal>
-            <button v-if="loggedIn" @click="clear">Logout</button>
-            <NuxtLink v-else>Login</NuxtLink>
+            <UButton variant="ghost" color="neutral" icon="material-symbols:logout" v-if="loggedIn" @click="clear" />
+            <UButton variant="ghost" color="neutral" v-else>Login</UButton>
 
             <template #content>
               <div class="flex p-4 gap-1">
@@ -42,9 +41,9 @@
 </template>
 
 <script setup lang="ts">
-  import type { NavigationMenuItem, FormSubmitEvent  } from '@nuxt/ui';
+  import type { NavigationMenuItem, FormSubmitEvent } from '@nuxt/ui';
   import * as z from 'zod';
-  
+
   const schema = z.object({
     email: z.string().email('Invalid email'),
     password: z.string().min(8, 'Must be at least 8 characters'),
@@ -88,7 +87,7 @@
         body: event.data,
       });
 
-      toast.add({ title: 'Success', description: 'The form has been submitted.', color: 'success' });
+      toast.add({ title: 'Success', description: 'Logged in successfully', color: 'success' });
 
       console.log('Logged in user:', user);
 
