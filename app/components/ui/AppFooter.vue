@@ -8,6 +8,10 @@
           </template>
         </UInput>
       </UFormField>
+      <p class="text-xs py-2">
+        Made by
+        <ULink to="https://26bz.online/" target="_blank">26bz</ULink>
+      </p>
     </template>
   </UFooterColumns>
 </template>
