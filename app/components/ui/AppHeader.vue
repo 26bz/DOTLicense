@@ -4,6 +4,7 @@
     <template #right>
       <AuthState>
         <template #default="{ loggedIn }">
+          <UButton v-if="loggedIn" variant="ghost" color="neutral" icon="material-symbols:dashboard" @click="navigateTo('/dashboard')" />
           <UModal>
             <UButton v-if="loggedIn" variant="ghost" color="neutral" icon="material-symbols:logout" @click="logout" />
             <UButton v-else variant="ghost" color="neutral">Login</UButton>

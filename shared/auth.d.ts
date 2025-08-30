@@ -1,19 +1,21 @@
+import type { Role } from '@prisma/client'
+
 declare module '#auth-utils' {
   interface User {
     id: number
     name: string
     userName: string
-    email: string
+    email?: string
     role: Role
-    dateOfBirth: Date
-    emailVerified: boolean
-    isPermitted: boolean
-    street?: string
-    city?: string
-    state?: string
-    zipCode?: string
-    country?: string
+    dateOfBirth?: Date
+    emailVerified?: boolean
+    isPermitted?: boolean
     newsletterSubscribed?: boolean
+    street?: string | null
+    city?: string | null
+    state?: string | null
+    zipCode?: string | null
+    country?: string | null
   }
 
   interface UserSession {

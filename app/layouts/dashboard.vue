@@ -45,10 +45,6 @@
   import AppFooter from '~/components/ui/AppFooter.vue'
   import AppHeader from '~/components/ui/AppHeader.vue'
 
-  definePageMeta({
-    layout: 'dashboard',
-  })
-
   const items: NavigationMenuItem[][] = [
     [
       {

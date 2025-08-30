@@ -12,9 +12,15 @@ So here we are. This project is at chill pace, no AI used. Thanks for stopping b
 
 ## Current Stack
 
-| Layer    | Tech / Library  |
-| -------- | --------------- |
-| Frontend | Nuxt            |
-| UI       | Nuxt UI         |
-| Database | Prisma ORM      |
-| Auth     | nuxt-auth-utils |
+| Layer      | Tech / Library                      |
+| ---------- | ----------------------------------- |
+| Frontend   | Nuxt                                |
+| UI         | Nuxt UI                             |
+| Styling    | Tailwind CSS                        |
+| State Mgmt | Pinia                               |
+| Database   | Prisma ORM                          |
+| Security   | nuxt-security                       |
+| Auth       | nuxt-auth-utils, nuxt-authorization |
+| API Layer  | Nitro                               |
+| Validation | Zod                                 |
+| Monitoring | —                                   |

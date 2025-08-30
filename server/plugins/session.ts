@@ -3,13 +3,21 @@ import prisma from '~~/lib/prisma'
 export default defineNitroPlugin(() => {
   sessionHooks.hook('fetch', async (session, event) => {
     if (session.user?.id) {
-      const userExists = await prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: { id: session.user.id },
+        select: {
+          id: true,
+          name: true,
+          userName: true,
+          role: true,
+        },
       })
 
-      if (!userExists) {
+      if (!user) {
         await clearUserSession(event)
         session.user = undefined
+      } else {
+        session.user = user
       }
     }
   })
