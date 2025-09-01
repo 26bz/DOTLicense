@@ -11,6 +11,7 @@
     "pages",
     "core",
     "api",
-    "schema"
+    "schema",
+    "config"
   ]
 }
