@@ -7,5 +7,10 @@
   },
   "tailwindCSS.classAttributes": ["class", "ui"],
   "tailwindCSS.experimental.classRegex": [["ui:\\s*{([^)]*)\\s*}", "(?:'|\"|`)([^']*)(?:'|\"|`)"]],
-  "conventionalCommits.scopes": ["pages", "core", "api"]
+  "conventionalCommits.scopes": [
+    "pages",
+    "core",
+    "api",
+    "schema"
+  ]
 }
