@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     'nuxt-authorization',
     // '@pinia/nuxt',
     '@nuxtjs/turnstile',
+    '@nuxt/scripts',
   ],
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
