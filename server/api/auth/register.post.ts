@@ -1,37 +1,49 @@
-import { z } from 'zod'
 import prisma from '~~/lib/prisma'
+import { registerSchema } from '#shared/schemas/auth'
+import bcrypt from 'bcrypt'
 
-const schema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(6),
-  dateOfBirth: z.string().refine(val => !isNaN(Date.parse(val)), { message: 'Invalid date format' }),
-})
 export default defineEventHandler(async event => {
   const body = await readBody(event)
-  const { name, email, dateOfBirth, password } = schema.parse(body)
+  const validatedData = registerSchema.parse(body)
 
-  const existing = await prisma.user.findUnique({ where: { email } })
+  const existing = await prisma.user.findFirst({
+    where: {
+      OR: [{ email: validatedData.email }, { userName: validatedData.userName }],
+    },
+  })
+
   if (existing) {
-    throw createError({ statusCode: 400, statusMessage: 'Email already registered' })
+    throw createError({
+      statusCode: 400,
+      statusMessage: existing.email === validatedData.email ? 'Email already registered' : 'Username already taken',
+    })
   }
 
-  const hashedPassword = await hashPassword(password)
+  const hashedPassword = await bcrypt.hash(validatedData.password, 10)
 
   const user = await prisma.user.create({
     data: {
-      name,
-      email,
-      dateOfBirth: new Date(dateOfBirth),
+      firstName: validatedData.firstName,
+      lastName: validatedData.lastName,
+      userName: validatedData.userName,
+      email: validatedData.email,
       password: hashedPassword,
+      dateOfBirth: new Date(validatedData.dateOfBirth),
+      street: validatedData.street,
+      city: validatedData.city,
+      state: validatedData.state,
+      zipCode: validatedData.zipCode,
+      country: validatedData.country,
+      newsletterSubscribed: validatedData.newsletterSubscribed,
     },
   })
 
   await setUserSession(event, {
     user: {
       id: user.id,
-      name: user.name,
-      dateOfBirth: new Date(),
+      firstName: user.firstName,
+      lastName: user.lastName,
+      userName: user.userName,
       email: user.email,
       role: user.role,
     },
@@ -39,11 +51,12 @@ export default defineEventHandler(async event => {
   })
 
   return {
-    success: true,
     user: {
       id: user.id,
       email: user.email,
-      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      userName: user.userName,
     },
   }
 })

@@ -26,7 +26,9 @@
   },
   "dependencies": {
     "@nuxt/eslint": "^1.9.0",
+    "@nuxt/scripts": "^0.11.13",
     "@nuxt/ui": "^4.0.0-alpha.0",
+    "@nuxtjs/turnstile": "^1.0.0",
     "@pinia/nuxt": "^0.11.2",
     "@prisma/nuxt": "^0.3.0",
     "bcrypt": "^6.0.0",
@@ -40,7 +42,7 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@iconify-json/lucide": "^1.2.64",
+    "@iconify-json/lucide": "^1.2.66",
     "@iconify-json/material-symbols": "^1.2.33",
     "@types/bcrypt": "^6.0.0"
   }

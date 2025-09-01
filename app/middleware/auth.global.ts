@@ -5,7 +5,7 @@ export default defineNuxtRouteMiddleware(async to => {
 
   await fetch()
 
-  if (!unref(loggedIn) && to.path.startsWith('/dashboard')) {
+  if (to.meta.auth && !unref(loggedIn)) {
     return navigateTo('/')
   }
 })

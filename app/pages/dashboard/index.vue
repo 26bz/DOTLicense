@@ -1,34 +1,8 @@
-<script setup lang="ts">
-  definePageMeta({
-    layout: 'dashboard',
-  })
-  const { user } = useUserSession()
-
-  const userStats = [
-    {
-      title: 'Purchases',
-      value: '12',
-      icon: 'i-lucide-box',
-    },
-    {
-      title: 'Licenses',
-      value: '12',
-      icon: 'i-lucide-box',
-    },
-    {
-      title: 'Tickets',
-      value: '12',
-      icon: 'i-lucide-box',
-    },
-  ]
-</script>
-
 <template>
   <div class="max-w-7xl mx-auto">
     <div class="space-y-4">
-      <h1 class="text-xl font-bold flex-1">Welcome Back, {{ user?.name }}</h1>
-      <p class="text-gray-500">{{ user?.email }}</p>
-
+      <h1 v-if="loggedIn">Welcome Back, {{ user?.firstName }}!</h1>
+      <p v-else>Not logged in</p>
       <UCard class="mt-3">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <UCard v-for="stats in userStats" :key="stats.title" class="flex flex-col items-center p-3 text-center">
@@ -57,9 +31,9 @@
             <UCard>
               <h1 class="font-semibold text-lg mb-3">Quick Actions</h1>
               <div class="flex flex-wrap gap-2">
-                <UButton icon="i-lucide-key" size="sm">View Licenses</UButton>
-                <UButton icon="i-lucide-cog" size="sm">Account Settings</UButton>
-                <UButton icon="i-lucide-message-circle" size="sm">Open Ticket</UButton>
+                <UButton to="/dashboard/licenses" icon="i-lucide-key" size="sm">View Licenses</UButton>
+                <UButton to="/dashboard/settings" icon="i-lucide-cog" size="sm">Account Settings</UButton>
+                <UButton to="/dashboard/support" icon="i-lucide-message-circle" size="sm">Open Ticket</UButton>
               </div>
             </UCard>
           </div>
@@ -67,7 +41,15 @@
           <div class="space-y-4">
             <UCard>
               <h1 class="font-semibold text-lg mb-3">Announcements</h1>
-              <UAlert color="secondary" title="DotLicense in development!" />
+              <template v-if="announcements?.length">
+                <div class="space-y-1">
+                  <UAlert v-for="item in announcements" :key="item.id" color="secondary" variant="outline" :title="item.title" :description="item.description" />
+                </div>
+              </template>
+
+              <template v-else>
+                <UAlert color="secondary" variant="outline" title="No announcements yet" />
+              </template>
             </UCard>
 
             <UCard>
@@ -89,3 +71,21 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+  definePageMeta({
+    layout: 'dashboard',
+    auth: true,
+  })
+
+  const { user, loggedIn } = useUserSession()
+
+  const { data: stats } = useFetch('/api/user/stats')
+  const { data: announcements } = await useFetch('/api/announcements', { lazy: true })
+
+  const userStats = computed(() => [
+    { title: 'Purchases', value: stats.value?.stats.purchases ?? 0, icon: 'i-lucide-box' },
+    { title: 'Licenses', value: stats.value?.stats.licenses ?? 0, icon: 'i-lucide-key' },
+    { title: 'Subscriptions', value: stats.value?.stats.subscriptions ?? 0, icon: 'i-lucide-refresh-cw' },
+  ])
+</script>

@@ -8,12 +8,16 @@ async function main() {
 
   const admin = await prisma.user.create({
     data: {
-      name: 'Example Admin',
-      userName: '26bz',
+      firstName: 'Example',
+      lastName: 'BZ',
+      userName: 'Example',
       email: 'contact@example.com',
       password: hashedPassword,
+      phone: '111-111-1111',
       dateOfBirth: new Date('2001-01-01'),
       role: 'ADMIN',
+      street: '123 Google Drive, New York',
+      country: 'United States',
     },
   })
   console.log('Created First Admin User:', admin.email)

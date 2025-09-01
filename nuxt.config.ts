@@ -9,9 +9,11 @@ export default defineNuxtConfig({
     'nuxt-auth-utils',
     '@prisma/nuxt',
     'nuxt-authorization',
-    '@pinia/nuxt',
+    // '@pinia/nuxt',
+    '@nuxtjs/turnstile',
   ],
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' },
   },
-});
+})

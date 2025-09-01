@@ -3,7 +3,6 @@ import { viewLicense } from '~~/shared/utils/abilities'
 
 export default defineEventHandler(async event => {
   const session = await requireUserSession(event)
-
   authorize(event, viewLicense, session.user.id)
 
   const licenses = await prisma.license.findMany({

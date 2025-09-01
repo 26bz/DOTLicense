@@ -1,4 +1,5 @@
 import prisma from '~~/lib/prisma'
+import { updateServiceSchema } from '#shared/schemas/services'
 import { updateService } from '~~/shared/utils/abilities'
 
 export default defineEventHandler(async event => {
@@ -9,11 +10,11 @@ export default defineEventHandler(async event => {
   if (isNaN(id)) throw createError({ statusCode: 400, statusMessage: 'Invalid service ID' })
 
   const body = await readBody(event)
-
-  const updated = await prisma.service.update({
-    where: { id },
-    data: body,
+  const data = updateServiceSchema.parse({
+    ...body,
+    features: Array.isArray(body.features) ? body.features : [],
   })
 
-  return { success: true, service: updated }
+  const updated = await prisma.service.update({ where: { id }, data })
+  return updated
 })

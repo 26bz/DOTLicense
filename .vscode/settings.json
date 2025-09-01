@@ -1,6 +1,7 @@
 {
   "conventionalCommits.scopes": [
     "pages",
-    "core"
+    "core",
+    "core,pages"
   ]
 }

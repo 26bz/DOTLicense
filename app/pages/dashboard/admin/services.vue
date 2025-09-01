@@ -1,171 +1,3 @@
-<script setup lang="ts">
-  import { ref } from 'vue'
-  import { z } from 'zod'
-
-  definePageMeta({ layout: 'dashboard' })
-
-  const serviceSchema = z.object({
-    title: z.string().min(1, 'Title is required'),
-    shortDescription: z.string().optional(),
-    description: z.string().min(1, 'Description is required'),
-    price: z.string().min(1, 'Price is required'),
-    currency: z.string().default('USD'),
-    isOneTime: z.boolean().default(true),
-    isSubscription: z.boolean().default(false),
-    subscriptionInterval: z.string().optional(),
-    features: z.array(z.string()).default([]),
-    buttonLabel: z.string().min(1, 'Button label is required'),
-    deliveryTimeframe: z.string().optional(),
-    includesRevisions: z.boolean().default(true),
-    maxRevisions: z.number().optional(),
-    includesConsultation: z.boolean().default(false),
-    consultationHours: z.number().optional(),
-    isActive: z.boolean().default(true),
-    isFeatured: z.boolean().default(false),
-  })
-
-  const defaultService = {
-    title: '',
-    shortDescription: '',
-    description: '',
-    price: '',
-    currency: 'USD',
-    isOneTime: true,
-    isSubscription: false,
-    subscriptionInterval: '',
-    features: [] as string[],
-    buttonLabel: '',
-    deliveryTimeframe: '',
-    includesRevisions: true,
-    maxRevisions: 3,
-    includesConsultation: false,
-    consultationHours: 0,
-    isActive: true,
-    isFeatured: false,
-  }
-
-  const serviceForm = ref({ ...defaultService })
-  const featuresInput = ref('')
-  const isModalOpen = ref(false)
-  const isSubmitting = ref(false)
-  const editingService = ref<{ id: number; title: string } | null>(null)
-  const isEditMode = computed(() => editingService.value !== null)
-  const modalTitle = computed(() => (isEditMode.value ? 'Edit Service' : 'Create New Service'))
-  const submitButtonText = computed(() => {
-    if (isSubmitting.value) {
-      return isEditMode.value ? 'Updating...' : 'Creating...'
-    }
-    return isEditMode.value ? 'Update Service' : 'Create Service'
-  })
-
-  const serviceToDelete = ref<{ id: number; title: string } | null>(null)
-  const isDeleteModalOpen = ref(false)
-
-  const { data: services, refresh } = await useFetch('/api/services')
-
-  const openCreateModal = () => {
-    resetForm()
-    isModalOpen.value = true
-  }
-
-  const openEditModal = (service: any) => {
-    editingService.value = { id: service.id, title: service.title }
-
-    serviceForm.value = {
-      title: service.title,
-      shortDescription: service.shortDescription || '',
-      description: service.description,
-      price: service.price,
-      currency: service.currency || 'USD',
-      isOneTime: service.isOneTime ?? true,
-      isSubscription: service.isSubscription ?? false,
-      subscriptionInterval: service.subscriptionInterval || '',
-      features: Array.isArray(service.features) ? service.features : [],
-      buttonLabel: service.buttonLabel,
-      deliveryTimeframe: service.deliveryTimeframe || '',
-      includesRevisions: service.includesRevisions ?? true,
-      maxRevisions: service.maxRevisions ?? 3,
-      includesConsultation: service.includesConsultation ?? false,
-      consultationHours: service.consultationHours ?? 0,
-      isActive: service.isActive ?? true,
-      isFeatured: service.isFeatured ?? false,
-    }
-
-    featuresInput.value = Array.isArray(service.features) ? service.features.join(', ') : ''
-    isModalOpen.value = true
-  }
-
-  const handleSubmit = async () => {
-    try {
-      isSubmitting.value = true
-
-      // Process features input
-      serviceForm.value.features = Array.from(
-        new Set(
-          featuresInput.value
-            .split(',')
-            .map(f => f.trim())
-            .filter(f => f)
-        )
-      )
-
-      if (isEditMode.value) {
-        await $fetch(`/api/services/${editingService.value!.id}`, {
-          method: 'PUT',
-          body: serviceForm.value,
-        })
-      } else {
-        await $fetch('/api/services', {
-          method: 'POST',
-          body: serviceForm.value,
-        })
-      }
-
-      await refresh()
-      closeModal()
-    } catch (error) {
-      console.error(`Error ${isEditMode.value ? 'updating' : 'creating'} service:`, error)
-    } finally {
-      isSubmitting.value = false
-    }
-  }
-
-  const resetForm = () => {
-    serviceForm.value = { ...defaultService }
-    featuresInput.value = ''
-    editingService.value = null
-  }
-
-  const closeModal = () => {
-    resetForm()
-    isModalOpen.value = false
-  }
-
-  const confirmDeleteService = (service: { id: number; title: string }) => {
-    serviceToDelete.value = service
-    isDeleteModalOpen.value = true
-  }
-
-  const deleteService = async () => {
-    if (!serviceToDelete.value) return
-
-    try {
-      await $fetch(`/api/services/${serviceToDelete.value.id}`, { method: 'DELETE' })
-      await refresh()
-    } catch (error) {
-      console.error('Error deleting service:', error)
-    } finally {
-      serviceToDelete.value = null
-      isDeleteModalOpen.value = false
-    }
-  }
-
-  const cancelDelete = () => {
-    serviceToDelete.value = null
-    isDeleteModalOpen.value = false
-  }
-</script>
-
 <template>
   <UContainer>
     <UPageHeader title="Services Management" description="Manage service for hire listings with pricing plans." />
@@ -176,7 +8,7 @@
 
     <UModal v-model:open="isModalOpen" :title="modalTitle">
       <template #body>
-        <UForm :schema="serviceSchema" :state="serviceForm" class="space-y-4" @submit="handleSubmit">
+        <UForm :schema="currentSchema" :state="serviceForm" class="space-y-4" @submit="handleSubmit">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <UFormField label="Title" required>
               <UInput v-model="serviceForm.title" placeholder="e.g., Solo Plan" />
@@ -188,7 +20,7 @@
           </div>
 
           <UFormField label="Short Description">
-            <UInput v-model="serviceForm.shortDescription" placeholder="e.g., Tailored for indie hackers" class="w-full" />
+            <UInput v-model="serviceForm.shortDescription" placeholder="e.g., Short description" class="w-full" />
           </UFormField>
 
           <UFormField label="Description" required>
@@ -287,7 +119,8 @@
                 </div>
               </template>
 
-              <div class="space-y-3">
+              <div class="space-y-2">
+                <p class="text-sm text-neutral-600 font-medium">{{ service.shortDescription }}</p>
                 <p class="text-sm text-neutral-600">{{ service.description }}</p>
 
                 <div>
@@ -321,3 +154,152 @@
     </div>
   </UContainer>
 </template>
+
+<script setup lang="ts">
+  import { ref } from 'vue'
+  import { createServiceSchema, updateServiceSchema, type CreateServiceInput, type Service } from '#shared/schemas/services'
+
+  definePageMeta({ layout: 'dashboard' })
+
+  const defaultService: CreateServiceInput = {
+    title: '',
+    shortDescription: '',
+    description: '',
+    price: '',
+    currency: 'USD',
+    features: [],
+    buttonLabel: '',
+    deliveryTimeframe: '',
+    includesRevisions: true,
+    maxRevisions: 3,
+    includesConsultation: false,
+    consultationHours: 0,
+    isActive: true,
+    isFeatured: false,
+    isOneTime: true,
+    isSubscription: false,
+    subscriptionInterval: '',
+  }
+
+  const serviceForm = ref<CreateServiceInput>({ ...defaultService })
+  const featuresInput = ref('')
+  const isModalOpen = ref(false)
+  const isSubmitting = ref(false)
+  const editingService = ref<{ id: number; title: string } | null>(null)
+
+  const isEditMode = computed(() => editingService.value !== null)
+  const modalTitle = computed(() => (isEditMode.value ? 'Edit Service' : 'Create New Service'))
+  const currentSchema = computed(() => (isEditMode.value ? updateServiceSchema : createServiceSchema))
+  const submitButtonText = computed(() => {
+    if (isSubmitting.value) {
+      return isEditMode.value ? 'Updating...' : 'Creating...'
+    }
+    return isEditMode.value ? 'Update Service' : 'Create Service'
+  })
+
+  const serviceToDelete = ref<{ id: number; title: string } | null>(null)
+  const isDeleteModalOpen = ref(false)
+
+  const { data: services, refresh } = await useFetch<Service[]>('/api/services')
+
+  const openCreateModal = () => {
+    resetForm()
+    isModalOpen.value = true
+  }
+
+  const openEditModal = (service: Service) => {
+    editingService.value = { id: service.id, title: service.title }
+
+    serviceForm.value = {
+      title: service.title,
+      shortDescription: service.shortDescription || '',
+      description: service.description,
+      price: service.price,
+      currency: service.currency || 'USD',
+      features: Array.isArray(service.features) ? service.features : [],
+      buttonLabel: service.buttonLabel,
+      deliveryTimeframe: service.deliveryTimeframe || '',
+      includesRevisions: service.includesRevisions ?? true,
+      maxRevisions: service.maxRevisions ?? 3,
+      includesConsultation: service.includesConsultation ?? false,
+      consultationHours: service.consultationHours ?? 0,
+      isActive: service.isActive ?? true,
+      isFeatured: service.isFeatured ?? false,
+      isOneTime: service.isOneTime ?? true,
+      isSubscription: service.isSubscription ?? false,
+      subscriptionInterval: service.subscriptionInterval || '',
+    }
+
+    featuresInput.value = Array.isArray(service.features) ? service.features.join(', ') : ''
+    isModalOpen.value = true
+  }
+
+  const handleSubmit = async () => {
+    try {
+      isSubmitting.value = true
+
+      serviceForm.value.features = Array.from(
+        new Set(
+          featuresInput.value
+            .split(',')
+            .map(f => f.trim())
+            .filter(f => f)
+        )
+      )
+
+      if (isEditMode.value) {
+        await $fetch(`/api/services/${editingService.value!.id}`, {
+          method: 'PUT',
+          body: serviceForm.value,
+        })
+      } else {
+        await $fetch('/api/services', {
+          method: 'POST',
+          body: serviceForm.value,
+        })
+      }
+
+      await refresh()
+      closeModal()
+    } catch (error) {
+      console.error(`Error ${isEditMode.value ? 'updating' : 'creating'} service:`, error)
+    } finally {
+      isSubmitting.value = false
+    }
+  }
+
+  const resetForm = () => {
+    serviceForm.value = { ...defaultService }
+    featuresInput.value = ''
+    editingService.value = null
+  }
+
+  const closeModal = () => {
+    resetForm()
+    isModalOpen.value = false
+  }
+
+  const confirmDeleteService = (service: { id: number; title: string }) => {
+    serviceToDelete.value = service
+    isDeleteModalOpen.value = true
+  }
+
+  const deleteService = async () => {
+    if (!serviceToDelete.value) return
+
+    try {
+      await $fetch(`/api/services/${serviceToDelete.value.id}`, { method: 'DELETE' })
+      await refresh()
+    } catch (error) {
+      console.error('Error deleting service:', error)
+    } finally {
+      serviceToDelete.value = null
+      isDeleteModalOpen.value = false
+    }
+  }
+
+  const cancelDelete = () => {
+    serviceToDelete.value = null
+    isDeleteModalOpen.value = false
+  }
+</script>
