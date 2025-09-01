@@ -7,13 +7,23 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/ui',
     'nuxt-auth-utils',
-    '@prisma/nuxt',
-    'nuxt-authorization', // '@pinia/nuxt',
+    '@prisma/nuxt', // '@pinia/nuxt',
+    'nuxt-authorization',
     '@nuxtjs/turnstile',
     '@nuxt/scripts',
     'nuxt-security',
     '@nuxt/image',
+    '@nuxtjs/seo',
   ],
+  nitro: {
+    prerender: {
+      routes: ['/sitemap.xml'],
+    },
+  },
+  robots: {
+    blockNonSeoBots: true,
+    blockAiBots: true,
+  },
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     layoutTransition: { name: 'layout', mode: 'out-in' },
