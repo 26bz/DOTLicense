@@ -1,14 +1,14 @@
 import { z } from 'zod'
 
 export const licenseSchema = z.object({
-  id: z.string(),
-  code: z.string(),
-  issuedAt: z.string(),
-  expiresAt: z.string().nullable(),
+  id: z.string().trim().min(1, { message: 'License ID is required' }),
+  code: z.string().trim().min(1, { message: 'License code is required' }),
+  issuedAt: z.string().trim().min(1, { message: 'Issued date is required' }),
+  expiresAt: z.string().trim().nullable(),
   revoked: z.boolean(),
   product: z.object({
-    id: z.string(),
-    name: z.string(),
+    id: z.string().trim().min(1, { message: 'Product ID is required' }),
+    name: z.string().trim().min(1, { message: 'Product name is required' }),
   }),
 })
 

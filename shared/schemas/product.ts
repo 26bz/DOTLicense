@@ -1,25 +1,25 @@
 import { z } from 'zod'
 
 export const createProductSchema = z.object({
-  name: z.string().min(1),
-  slug: z.string().min(1),
-  description: z.string().min(1),
-  shortDescription: z.string().optional(),
-  coverImage: z.string().min(1),
-  tags: z.string().min(1),
-  version: z.string().min(1),
-  categoryId: z.string().min(1),
+  name: z.string().trim().min(1, { message: 'Product name is required' }),
+  slug: z.string().trim().min(1, { message: 'Slug is required' }),
+  description: z.string().trim().min(1, { message: 'Description is required' }),
+  shortDescription: z.string().trim().optional(),
+  coverImage: z.string().trim().min(1, { message: 'Cover image is required' }),
+  tags: z.string().trim().min(1, { message: 'At least one tag is required' }),
+  version: z.string().trim().min(1, { message: 'Version is required' }),
+  categoryId: z.string().trim().min(1, { message: 'Category is required' }),
   isActive: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
-  changeLog: z.string().optional(),
-  fileUrl: z.string().min(1),
-  fileName: z.string().optional(),
-  mimeType: z.string().optional(),
+  changeLog: z.string().trim().optional(),
+  fileUrl: z.string().trim().min(1, { message: 'File URL is required' }),
+  fileName: z.string().trim().optional(),
+  mimeType: z.string().trim().optional(),
   fileSize: z.number().optional(),
-  price: z.number().min(0),
+  price: z.number().min(0, { message: 'Price must be 0 or greater' }),
   isOneTime: z.boolean().default(true),
   isSubscription: z.boolean().default(false),
-  subscriptionInterval: z.string().optional(),
+  subscriptionInterval: z.string().trim().optional(),
 })
 
 export const updateProductSchema = createProductSchema.partial()
@@ -30,7 +30,10 @@ export const productSchema = createProductSchema.extend({
   purchaseCount: z.number(),
   createdAt: z.union([z.date(), z.string()]),
   updatedAt: z.union([z.date(), z.string()]),
-  category: z.object({ name: z.string(), slug: z.string().optional() }),
+  category: z.object({
+    name: z.string().trim().min(1, { message: 'Category name is required' }),
+    slug: z.string().trim().optional(),
+  }),
 })
 
 export type CreateProductInput = z.infer<typeof createProductSchema>

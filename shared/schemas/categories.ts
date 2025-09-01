@@ -1,10 +1,10 @@
 import { z } from 'zod'
 
 export const createCategorySchema = z.object({
-  name: z.string(),
-  slug: z.string(),
-  description: z.string().optional(),
-  icon: z.string().optional(),
+  name: z.string().trim().min(1, { message: 'Category name is required' }),
+  slug: z.string().trim().min(1, { message: 'Slug is required' }),
+  description: z.string().trim().optional(),
+  icon: z.string().trim().optional(),
 })
 
 export const updateCategorySchema = createCategorySchema.partial()

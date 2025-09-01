@@ -1,25 +1,25 @@
 import { z } from 'zod'
 
 export const updateProfileSchema = z.object({
-  firstName: z.string().min(2),
-  lastName: z.string().min(2),
-  userName: z.string().min(5, 'Username is required'),
-  email: z.email(),
-  phone: z.string().optional(),
-  dateOfBirth: z.any().nullable(),
-  street: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  zipCode: z.string().optional(),
-  country: z.string().optional(),
+  firstName: z.string().trim().min(2, { message: 'First name must be at least 2 characters' }),
+  lastName: z.string().trim().min(2, { message: 'Last name must be at least 2 characters' }),
+  userName: z.string().trim().nonempty({ message: 'Username is required' }).min(5, { message: 'Username must be at least 5 characters' }),
+  email: z.email({ message: 'Invalid email address' }),
+  phone: z.string().trim().optional(),
+  dateOfBirth: z.union([z.date(), z.string()]).nullable().optional(),
+  street: z.string().trim().optional(),
+  city: z.string().trim().optional(),
+  state: z.string().trim().optional(),
+  zipCode: z.string().trim().optional(),
+  country: z.string().trim().optional(),
   newsletterSubscribed: z.boolean().optional(),
 })
 
 export const changePasswordSchema = z
   .object({
-    currentPassword: z.string().min(6),
-    newPassword: z.string().min(6),
-    confirmPassword: z.string().min(6),
+    currentPassword: z.string().min(6, { message: 'Current password must be at least 6 characters' }),
+    newPassword: z.string().min(6, { message: 'New password must be at least 6 characters' }),
+    confirmPassword: z.string().min(6, { message: 'Confirm password must be at least 6 characters' }),
   })
   .refine(data => data.newPassword === data.confirmPassword, {
     message: "Passwords don't match",
@@ -31,7 +31,7 @@ export const userSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   userName: z.string(),
-  email: z.email(),
+  email: z.email({ message: 'Invalid email address' }),
   phone: z.string().optional(),
   dateOfBirth: z.union([z.date(), z.string()]).optional(),
   street: z.string().optional(),

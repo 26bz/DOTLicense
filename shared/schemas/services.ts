@@ -1,14 +1,14 @@
 import { z } from 'zod'
 
 export const createServiceSchema = z.object({
-  title: z.string().min(2),
-  shortDescription: z.string().optional(),
-  description: z.string().min(5),
-  price: z.string().min(1),
-  currency: z.string().default('USD'),
-  features: z.array(z.string()).default([]),
-  buttonLabel: z.string().min(1),
-  deliveryTimeframe: z.string().optional(),
+  title: z.string().trim().min(2, { message: 'Title must be at least 2 characters' }),
+  shortDescription: z.string().trim().optional(),
+  description: z.string().trim().min(5, { message: 'Description must be at least 5 characters' }),
+  price: z.string().trim().min(1, { message: 'Price is required' }),
+  currency: z.string().trim().default('USD'),
+  features: z.array(z.string().trim()).default([]),
+  buttonLabel: z.string().trim().min(1, { message: 'Button label is required' }),
+  deliveryTimeframe: z.string().trim().optional(),
   includesRevisions: z.boolean().default(true),
   maxRevisions: z.number().optional(),
   includesConsultation: z.boolean().default(false),
@@ -17,7 +17,7 @@ export const createServiceSchema = z.object({
   isFeatured: z.boolean().default(false),
   isOneTime: z.boolean().default(true),
   isSubscription: z.boolean().default(false),
-  subscriptionInterval: z.string().optional(),
+  subscriptionInterval: z.string().trim().optional(),
 })
 
 export const updateServiceSchema = createServiceSchema.partial()

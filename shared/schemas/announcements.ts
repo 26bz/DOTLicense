@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
 export const announcementSchema = z.object({
-  title: z.string().min(1),
-  description: z.string().min(1),
+  title: z.string().trim().min(1, { message: 'Title is required' }),
+  description: z.string().trim().min(1, { message: 'Description is required' }),
 })
 
 export const fullAnnouncementSchema = announcementSchema.extend({
