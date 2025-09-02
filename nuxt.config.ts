@@ -114,7 +114,7 @@ export default defineNuxtConfig({
     },
     hidePoweredBy: true,
     basicAuth: false,
-    enabled: true,
+    enabled: process.env.NODE_ENV !== 'development',
     csrf: false,
     nonce: true,
     removeLoggers: true,
