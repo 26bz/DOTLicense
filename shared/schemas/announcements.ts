@@ -8,7 +8,7 @@ export const announcementSchema = z.object({
 export const fullAnnouncementSchema = announcementSchema.extend({
   id: z.string(),
   createdAt: z.union([z.date(), z.string()]),
-  updatedAt: z.union([z.date(), z.string()]),
+  updatedAt: z.union([z.date(), z.string()]).optional().nullable(), 
 })
 
 export type AnnouncementInput = z.infer<typeof announcementSchema>
