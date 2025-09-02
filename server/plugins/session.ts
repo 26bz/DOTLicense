@@ -8,20 +8,11 @@ export default defineNitroPlugin(() => {
         where: { id: session.user.id },
         select: {
           id: true,
-          firstName: true,
-          lastName: true,
           userName: true,
           email: true,
           role: true,
-          dateOfBirth: true,
           emailVerified: true,
           isPermitted: true,
-          newsletterSubscribed: true,
-          street: true,
-          city: true,
-          state: true,
-          zipCode: true,
-          country: true,
         },
       })
 

@@ -12,6 +12,7 @@
     "core",
     "api",
     "schema",
-    "config"
+    "config",
+    "auth"
   ]
 }

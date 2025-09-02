@@ -5,24 +5,26 @@
       <USeparator />
 
       <h2 class="text-md font-semibold">Account Information</h2>
-      <UFormField label="Username" name="userName" required>
-        <UInput v-model="profileState.userName" placeholder="Enter a username" required class="w-full" />
-      </UFormField>
-      <UFormField label="Email" name="email" required>
-        <UInput v-model="profileState.email" type="email" required class="w-full mb-1" />
-        <span class="text-yellow-500">Email is not verified</span>
-      </UFormField>
-      <UFormField label="Date of Birth" name="dateOfBirth">
-        <UPopover>
-          <UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-            <NuxtTime v-if="profileState.dateOfBirth" :datetime="profileState.dateOfBirth.toDate(getLocalTimeZone())" year="numeric" month="short" day="numeric" />
-            <span v-else>Select a date</span>
-          </UButton>
-          <template #content>
-            <UCalendar v-model="profileState.dateOfBirth" class="p-2" />
-          </template>
-        </UPopover>
-      </UFormField>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <UFormField label="Username" name="userName" required>
+          <UInput v-model="profileState.userName" placeholder="Enter a username" required class="w-full" />
+        </UFormField>
+        <UFormField label="Email" name="email" required>
+          <div>
+            <UInput v-model="profileState.email" type="email" required class="w-full mb-1" />
+            <span class="text-yellow-500">Email is not verified</span>
+          </div>
+        </UFormField>
+        <UFormField label="Company Name" name="companyName">
+          <UInput v-model="profileState.companyName" placeholder="Enter your company name" class="w-full" />
+        </UFormField>
+        <UFormField label="Job Title" name="jobTitle">
+          <UInput v-model="profileState.jobTitle" placeholder="e.g. CTO, Product Manager" class="w-full" />
+        </UFormField>
+        <UFormField label="Company Website" name="companyWebsite">
+          <UInput v-model="profileState.companyWebsite" placeholder="https://company.com" class="w-full" />
+        </UFormField>
+      </div>
 
       <USeparator class="my-4" />
 
@@ -34,10 +36,13 @@
         <UFormField label="Last Name" name="lastName" required>
           <UInput v-model="profileState.lastName" required class="w-full" />
         </UFormField>
+        <UFormField label="Phone Number" name="phone">
+          <UInput v-model="profileState.phone" placeholder="+1 555 123 4567" class="w-full" />
+        </UFormField>
+        <UFormField label="Date of Birth" name="dateOfBirth" required>
+          <UInput v-model="profileState.dateOfBirth" type="date" required class="w-full" />
+        </UFormField>
       </div>
-      <UFormField label="Phone Number" name="phone">
-        <UInput v-model="profileState.phone" placeholder="+1 555 123 4567" class="w-full" />
-      </UFormField>
 
       <USeparator class="my-4" />
 
@@ -109,7 +114,6 @@
 <script lang="ts" setup>
   import { updateProfileSchema, changePasswordSchema, type UpdateProfileInput, type ChangePasswordInput } from '#shared/schemas/user'
   import type { FormSubmitEvent } from '@nuxt/ui'
-  import { CalendarDate, getLocalTimeZone } from '@internationalized/date'
 
   definePageMeta({ layout: 'dashboard' })
 
@@ -120,15 +124,12 @@
     firstName: userData.value?.user?.firstName,
     lastName: userData.value?.user?.lastName,
     userName: userData.value?.user?.userName,
+    companyName: userData.value?.user?.companyName || '',
+    jobTitle: userData.value?.user?.jobTitle || '',
+    companyWebsite: userData.value?.user?.companyWebsite || '',
     email: userData.value?.user?.email,
     phone: userData.value?.user?.phone,
-    dateOfBirth: userData.value?.user?.dateOfBirth
-      ? new CalendarDate(
-          new Date(userData.value.user.dateOfBirth).getFullYear(),
-          new Date(userData.value.user.dateOfBirth).getMonth() + 1,
-          new Date(userData.value.user.dateOfBirth).getDate()
-        )
-      : null,
+    dateOfBirth: userData.value?.user?.dateOfBirth ? new Date(userData.value.user.dateOfBirth).toISOString().split('T')[0] : ('' as string),
     street: userData.value?.user?.street || '',
     city: userData.value?.user?.city || '',
     state: userData.value?.user?.state || '',
@@ -151,7 +152,7 @@
         method: 'POST',
         body: {
           ...event.data,
-          dateOfBirth: event.data.dateOfBirth?.toDate(getLocalTimeZone()).toISOString(),
+          dateOfBirth: event.data.dateOfBirth ? new Date(event.data.dateOfBirth) : null,
         },
       })
       await fetchSession()
