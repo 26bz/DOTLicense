@@ -3,18 +3,8 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
-  modules: [
-    '@nuxt/eslint',
-    '@nuxt/ui',
-    'nuxt-auth-utils',
-    '@prisma/nuxt', // '@pinia/nuxt',
-    'nuxt-authorization',
-    '@nuxtjs/turnstile',
-    '@nuxt/scripts',
-    'nuxt-security',
-    '@nuxt/image',
-    '@nuxtjs/seo',
-  ],
+  modules: ['@nuxt/eslint', '@nuxt/ui', 'nuxt-auth-utils', // '@pinia/nuxt',
+  '@prisma/nuxt', 'nuxt-authorization', '@nuxtjs/turnstile', '@nuxt/scripts', 'nuxt-security', '@nuxt/image', '@nuxtjs/seo', 'nuxt-echarts'],
   nitro: {
     prerender: {
       routes: ['/sitemap.xml'],
