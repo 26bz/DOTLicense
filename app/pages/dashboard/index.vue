@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-7xl mx-auto">
     <div class="space-y-4">
-      <h1 v-if="loggedIn">Welcome Back, {{ user?.firstName }}!</h1>
+      <h1 v-if="loggedIn">Welcome Back, {{ user?.userName }}!</h1>
       <p v-else>Not logged in</p>
       <UCard class="mt-3">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
