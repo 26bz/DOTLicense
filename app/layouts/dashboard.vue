@@ -12,18 +12,18 @@
             class: 'rounded-full',
           }"
         >
-          <UButton icon="eos-icons:admin" color="error" size="md" variant="ghost" />
+          <UButton icon="eos-icons:admin" color="warning" size="md" variant="soft" />
           <template #body>
             <div class="grid grid-cols-1 gap-2 p-4">
               <UButton icon="material-symbols:dashboard" label="Admin Overview" to="/dashboard/admin" color="neutral" variant="subtle" block />
               <UButton icon="material-symbols:inventory-2" label="Manage Products" to="/dashboard/admin/products" color="neutral" variant="subtle" block />
-              <UButton icon="material-symbols:home-repair-service" label="Manage Services" to="/dashboard/admin/services" color="neutral" variant="subtle" block />
-              <UButton icon="material-symbols:home-repair-service" label="Order Queue" to="/dashboard/admin/services" color="neutral" variant="subtle" block />
+              <UButton icon="material-symbols:build-circle" label="Manage Services" to="/dashboard/admin/services" color="neutral" variant="subtle" block />
+              <UButton icon="material-symbols:shopping-cart" label="Order Queue" to="/dashboard/admin/orders" color="neutral" variant="subtle" block />
               <UButton icon="material-symbols:group" label="Manage Users" to="/dashboard/admin/users" color="neutral" variant="subtle" block />
               <UButton icon="material-symbols:key" label="Manage Licenses" to="/dashboard/admin/licenses" color="neutral" variant="subtle" block />
-              <UButton icon="material-symbols:support-agent" label="Support Overview" to="/dashboard/admin/support" color="neutral" variant="subtle" block />
-              <UButton icon="material-symbols:support-agent" label="Announcements" to="/dashboard/admin/announcements" color="neutral" variant="subtle" block />
-              <UButton icon="material-symbols:support-agent" label="Email Campaigns" to="/dashboard/admin/announcements" color="neutral" variant="subtle" block />
+              <UButton icon="material-symbols:headset-mic" label="Support Overview" to="/dashboard/admin/support" color="neutral" variant="subtle" block />
+              <UButton icon="material-symbols:campaign" label="Announcements" to="/dashboard/admin/announcements" color="neutral" variant="subtle" block />
+              <UButton icon="material-symbols:outgoing-mail" label="Email Campaigns" to="/dashboard/admin/email-campaigns" color="neutral" variant="subtle" block />
               <UButton icon="material-symbols:assignment" label="Logs" to="/dashboard/admin/logs" color="neutral" variant="subtle" block />
             </div>
           </template>
@@ -59,17 +59,12 @@
         to: '/dashboard/licenses',
       },
       {
-        label: 'Account History',
+        label: 'Account Activity',
         icon: 'material-symbols:history-2',
-        to: '/dashboard/history',
+        to: '/dashboard/activity',
       },
     ],
     [
-      {
-        label: 'Ticket Center',
-        icon: 'material-symbols:call',
-        to: '/',
-      },
       {
         label: 'Account Settings',
         icon: 'material-symbols:account-box',

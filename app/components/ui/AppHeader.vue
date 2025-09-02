@@ -2,6 +2,7 @@
   <UHeader to="/" title="DOTLicense">
     <UNavigationMenu :items="items" />
     <template #right>
+      <UColorModeButton />
       <AuthState>
         <template #default="{ loggedIn }">
           <UButton v-if="loggedIn" variant="ghost" color="neutral" icon="material-symbols:dashboard" @click="navigateTo('/dashboard')" />
@@ -103,11 +104,6 @@
           <button disabled>Loading...</button>
         </template>
       </AuthState>
-      <UColorModeButton />
-
-      <UTooltip text="Open on GitHub" :kbds="['meta', 'G']">
-        <UButton color="neutral" variant="ghost" to="https://github.com/26bz/DOTLicense" target="_blank" icon="i-simple-icons-github" aria-label="GitHub" />
-      </UTooltip>
     </template>
   </UHeader>
 </template>
