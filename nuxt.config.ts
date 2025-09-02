@@ -29,7 +29,7 @@ export default defineNuxtConfig({
     layoutTransition: { name: 'layout', mode: 'out-in' },
   },
   turnstile: {
-    siteKey: process.env.NUXT_TURNSTILE_SITE_KEY,
+    siteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY,
   },
   runtimeConfig: {
     turnstile: {
