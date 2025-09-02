@@ -117,4 +117,8 @@ export default defineNuxtConfig({
     },
     sri: true,
   },
+    echarts: {
+    charts: ['BarChart'],
+    components: ['DatasetComponent', 'GridComponent', 'TooltipComponent'],
+  },
 })
