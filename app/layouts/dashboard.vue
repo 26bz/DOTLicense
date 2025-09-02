@@ -18,7 +18,7 @@
               <UButton icon="material-symbols:dashboard" label="Admin Overview" to="/dashboard/admin" color="neutral" variant="subtle" block />
               <UButton icon="material-symbols:inventory-2" label="Manage Products" to="/dashboard/admin/products" color="neutral" variant="subtle" block />
               <UButton icon="material-symbols:build-circle" label="Manage Services" to="/dashboard/admin/services" color="neutral" variant="subtle" block />
-              <UButton icon="material-symbols:shopping-cart" label="Order Queue" to="/dashboard/admin/orders" color="neutral" variant="subtle" block />
+              <UButton icon="material-symbols:shopping-cart" label="Order Queue" to="/dashboard/admin/order-queue" color="neutral" variant="subtle" block />
               <UButton icon="material-symbols:group" label="Manage Users" to="/dashboard/admin/users" color="neutral" variant="subtle" block />
               <UButton icon="material-symbols:key" label="Manage Licenses" to="/dashboard/admin/licenses" color="neutral" variant="subtle" block />
               <UButton icon="material-symbols:headset-mic" label="Support Overview" to="/dashboard/admin/support" color="neutral" variant="subtle" block />
