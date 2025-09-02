@@ -11,6 +11,7 @@ export const registerSchema = z
     lastName: z.string().trim().min(1, { message: 'Last name is required' }),
     userName: z.string().trim().nonempty({ message: 'Username is required' }).min(3, { message: 'Username must be at least 3 characters' }),
     email: z.email({ message: 'Invalid email' }),
+    phone: z.string().trim(),
     password: z.string().min(8, { message: 'Password must be at least 8 characters' }),
     confirmPassword: z.string().min(8, { message: 'Confirm password must be at least 8 characters' }),
     dateOfBirth: z.string().trim().min(1, { message: 'Date of birth is required' }),

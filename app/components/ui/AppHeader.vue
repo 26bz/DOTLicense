@@ -51,7 +51,9 @@
                 <UFormField label="Email" name="email">
                   <UInput v-model="registerState.email" class="w-full" />
                 </UFormField>
-
+                <UFormField label="Phone Number" name="phone">
+                  <UInput v-model="registerState.phone" class="w-full" />
+                </UFormField>
                 <UFormField label="Password" name="password">
                   <UInput v-model="registerState.password" type="password" class="w-full" />
                 </UFormField>
@@ -126,6 +128,7 @@
     lastName: undefined,
     userName: undefined,
     email: undefined,
+    phone: undefined,
     password: undefined,
     confirmPassword: undefined,
     dateOfBirth: undefined,

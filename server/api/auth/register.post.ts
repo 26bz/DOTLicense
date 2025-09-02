@@ -27,6 +27,7 @@ export default defineEventHandler(async event => {
       lastName: validatedData.lastName,
       userName: validatedData.userName,
       email: validatedData.email,
+      phone: validatedData.phone,
       password: hashedPassword,
       dateOfBirth: new Date(validatedData.dateOfBirth),
       street: validatedData.street,
@@ -41,8 +42,6 @@ export default defineEventHandler(async event => {
   await setUserSession(event, {
     user: {
       id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
       userName: user.userName,
       email: user.email,
       role: user.role,
