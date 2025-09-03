@@ -1,5 +1,12 @@
 import { z } from 'zod'
 
+export const categorySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+})
+
+const fileSchema = z.instanceof(File).nullable().optional()
+
 export const createProductSchema = z.object({
   name: z.string().trim().min(1, { message: 'Product name is required' }),
   slug: z.string().trim().min(1, { message: 'Slug is required' }),
@@ -36,6 +43,19 @@ export const productSchema = createProductSchema.extend({
   }),
 })
 
+export const productWithCategorySchema = productSchema.extend({
+  categoryId: z.string(),
+})
+
+export const productFormSchema = createProductSchema.extend({
+  coverImageFile: fileSchema,
+  productFile: fileSchema,
+  fileSizeDisplay: z.string().optional(),
+})
+
 export type CreateProductInput = z.infer<typeof createProductSchema>
 export type UpdateProductInput = z.infer<typeof updateProductSchema>
 export type Product = z.infer<typeof productSchema>
+export type ProductWithCategory = z.infer<typeof productWithCategorySchema>
+export type Category = z.infer<typeof categorySchema>
+export type ProductForm = z.infer<typeof productFormSchema>

@@ -1,6 +1,7 @@
 import prisma from '~~/lib/prisma'
 import { updateServiceSchema } from '#shared/schemas/services'
 import { updateService } from '~~/shared/utils/abilities'
+import { logActivity } from '~~/server/utils/activity'
 
 export default defineEventHandler(async event => {
   const session = await requireUserSession(event)
@@ -15,6 +16,16 @@ export default defineEventHandler(async event => {
     features: Array.isArray(body.features) ? body.features : [],
   })
 
-  const updated = await prisma.service.update({ where: { id }, data })
-  return updated
+  const service = await prisma.service.update({ where: { id }, data })
+
+  await logActivity(event, {
+    userId: session.user.id,
+    type: 'SERVICE_UPDATED',
+    description: `Admin updated service: ${service.title}`,
+    resourceId: service.id.toString(),
+    resourceType: 'service',
+    metadata: { serviceName: service.title, updatedFields: Object.keys(data), action: 'update' },
+  })
+
+  return service
 })

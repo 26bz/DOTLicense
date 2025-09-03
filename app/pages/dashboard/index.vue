@@ -17,16 +17,35 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
           <div class="lg:col-span-2 space-y-6">
             <UCard>
-              <h1 class="font-semibold text-lg mb-3">Recent Activity</h1>
-              <ul class="divide-y divide-gray-200">
-                <li class="py-2 flex justify-between bg-neutral-800 p-3 rounded-lg">
-                  <span>
-                    Purchased
-                    <span>Example Product</span>
+              <template #header>
+                <div class="flex items-center justify-between">
+                  <h3 class="text-base font-semibold leading-6 text-gray-900">Recent Activity</h3>
+                  <UButton to="/dashboard/activity" variant="ghost" size="sm" icon="i-lucide-arrow-right"> View All </UButton>
+                </div>
+              </template>
+
+              <div v-if="recentActivity?.activities?.length" class="space-y-2">
+                <div
+                  v-for="activity in recentActivity.activities.slice(0, 5)"
+                  :key="activity.id"
+                  class="flex items-center justify-between gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors duration-150"
+                >
+                  <div class="flex items-center gap-2 flex-1 min-w-0">
+                    <UIcon :name="getActivityIcon(activity.type)" class="w-4 h-4 flex-shrink-0" :class="getActivityColor(activity.type)" />
+                    <span class="text-sm text-gray-900 truncate">
+                      {{ formatActivityTitle(ActivityLogSchema.parse(activity)) }}
+                    </span>
+                  </div>
+                  <span class="text-xs text-gray-500 flex-shrink-0">
+                    <NuxtTime :datetime="activity.createdAt" relative />
                   </span>
-                  <span class="text-xs text-gray-500">1 Day ago</span>
-                </li>
-              </ul>
+                </div>
+              </div>
+
+              <div v-else class="text-center py-8">
+                <UIcon name="i-lucide-activity" class="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                <p class="text-sm text-gray-500">No recent activity</p>
+              </div>
             </UCard>
             <UCard>
               <h1 class="font-semibold text-lg mb-3">Quick Actions</h1>
@@ -54,16 +73,27 @@
 
             <UCard>
               <h1 class="font-semibold text-lg mb-3">Account Security</h1>
-              <p class="text-sm text-gray-600">
-                Last Login: Aug xx, 2025 from
-                <span class="text-gray-300">xx.xx.xx.xx</span>
-              </p>
+              <div v-if="lastLogin" class="text-sm text-gray-600">
+                <p>Last Login: <NuxtTime :datetime="lastLogin.createdAt" relative /></p>
+                <p v-if="lastLogin.ipAddress" class="text-xs text-gray-500 mt-1">
+                  from {{ lastLogin.ipAddress }}
+                  <span v-if="lastLogin.browser"> • {{ lastLogin.browser }}</span>
+                  <span v-if="lastLogin.os"> • {{ lastLogin.os }}</span>
+                </p>
+              </div>
+              <p v-else class="text-sm text-gray-500">No login history available</p>
             </UCard>
 
             <UCard>
               <h1 class="font-semibold text-lg mb-3">Support</h1>
-              <p class="text-sm text-gray-600">You have 1 open ticket.</p>
-              <UButton size="sm" variant="soft" icon="i-lucide-ticket" class="mt-2">Go to Support</UButton>
+              <div v-if="supportStats">
+                <p class="text-sm text-gray-600">You have {{ supportStats.openTickets }} open ticket{{ supportStats.openTickets !== 1 ? 's' : '' }}.</p>
+                <UButton size="sm" variant="soft" icon="i-lucide-ticket" class="mt-2" to="/dashboard/support">Go to Support</UButton>
+              </div>
+              <div v-else>
+                <p class="text-sm text-gray-600">No support tickets.</p>
+                <UButton size="sm" variant="soft" icon="i-lucide-plus" class="mt-2" to="/dashboard/support">Create Ticket</UButton>
+              </div>
             </UCard>
           </div>
         </div>
@@ -73,6 +103,8 @@
 </template>
 
 <script setup lang="ts">
+  import { getActivityIcon, getActivityColor, formatActivityTitle, formatActivityDate, ActivityLogSchema, type ActivityLog } from '#shared/schemas/activity'
+
   definePageMeta({
     layout: 'dashboard',
     auth: true,
@@ -82,10 +114,16 @@
 
   const { data: stats } = useFetch('/api/user/stats')
   const { data: announcements } = await useFetch('/api/announcements', { lazy: true })
+  const { data: recentActivity } = await useFetch('/api/user/activity?limit=5', { lazy: true })
+  const { data: lastLogin } = await useFetch('/api/user/last-login', { lazy: true })
 
   const userStats = computed(() => [
     { title: 'Purchases', value: stats.value?.stats.purchases ?? 0, icon: 'i-lucide-box' },
     { title: 'Licenses', value: stats.value?.stats.licenses ?? 0, icon: 'i-lucide-key' },
     { title: 'Subscriptions', value: stats.value?.stats.subscriptions ?? 0, icon: 'i-lucide-refresh-cw' },
   ])
+
+  const supportStats = computed(() => ({
+    openTickets: 0, // TODO: Implement support ticket counting
+  }))
 </script>

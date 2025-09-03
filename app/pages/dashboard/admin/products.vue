@@ -65,9 +65,21 @@
 
             <template #content>
               <div class="space-y-4">
-                <UFormField label="Cover Image URL" required>
-                  <UInput v-model="productForm.coverImage" placeholder="https://example.com/image.jpg" class="w-full" />
+                <UFormField label="Cover Image" required>
+                  <UFileUpload
+                    v-model="productForm.coverImageFile"
+                    accept="image/*"
+                    icon="i-lucide-image"
+                    label="Drop your cover image here"
+                    description="JPG, PNG, GIF or WebP (max. 5MB)"
+                    class="w-full min-h-32"
+                  />
                   <template #help> Main image displayed on product cards and pages </template>
+                </UFormField>
+
+                <UFormField label="Cover Image URL (Alternative)" v-if="!productForm.coverImageFile">
+                  <UInput v-model="productForm.coverImage" placeholder="https://example.com/image.jpg" class="w-full" />
+                  <template #help> Use URL if not uploading a file </template>
                 </UFormField>
 
                 <UFormField label="Short Description">
@@ -88,24 +100,38 @@
 
             <template #files>
               <div class="space-y-4">
-                <UFormField label="File URL" required>
+                <UFormField label="Product File" required>
+                  <UFileUpload
+                    v-model="productForm.productFile"
+                    accept="*"
+                    icon="i-lucide-file"
+                    label="Drop your product file here"
+                    description="ZIP, PDF, or any digital product file"
+                    class="w-full min-h-32"
+                  />
+                  <template #help> Main downloadable file for the product </template>
+                </UFormField>
+
+                <UFormField label="File URL (Alternative)" v-if="!productForm.productFile">
                   <UInput v-model="productForm.fileUrl" placeholder="https://example.com/file.zip" />
-                  <template #hint> Direct download link for the product file </template>
+                  <template #hint> Use URL if not uploading a file </template>
                 </UFormField>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <UFormField label="File Name">
                     <UInput v-model="productForm.fileName" placeholder="product-v1.0.0.zip" class="w-full" />
+                    <template #help> Will auto-populate from uploaded file </template>
                   </UFormField>
 
                   <UFormField label="MIME Type">
                     <UInput v-model="productForm.mimeType" placeholder="application/zip" class="w-full" />
+                    <template #help> Will auto-populate from uploaded file </template>
                   </UFormField>
                 </div>
 
-                <UFormField label="File Size (bytes)">
-                  <UInput v-model.number="productForm.fileSize" type="number" placeholder="1048576" class="max-w-xs w-full" />
-                  <template #help> File size in bytes (1 MB = 1,048,576 bytes) </template>
+                <UFormField label="File Size">
+                  <UInput v-model="productForm.fileSizeDisplay" readonly placeholder="Will auto-populate" class="max-w-xs w-full" />
+                  <template #help> Automatically calculated from uploaded file </template>
                 </UFormField>
               </div>
             </template>
@@ -255,22 +281,21 @@
 
 <script setup lang="ts">
   import { ref, computed } from 'vue'
-  import { createProductSchema, type CreateProductInput, type Product } from '#shared/schemas/product'
+  import {
+    createProductSchema,
+    productFormSchema,
+    categorySchema,
+    productWithCategorySchema,
+    type CreateProductInput,
+    type Product,
+    type ProductWithCategory,
+    type Category,
+    type ProductForm,
+  } from '#shared/schemas/product'
   import type { Ref } from 'vue'
   import type { TabsItem } from '@nuxt/ui'
 
   definePageMeta({ layout: 'dashboard' })
-
-  type ProductWithCategory = Product & {
-    categoryId: string
-  }
-
-  type Category = {
-    id: string
-    name: string
-  }
-
-  type ProductForm = CreateProductInput
 
   const defaultProduct: ProductForm = {
     name: '',
@@ -292,6 +317,9 @@
     isOneTime: true,
     isSubscription: false,
     subscriptionInterval: '',
+    coverImageFile: null,
+    productFile: null,
+    fileSizeDisplay: '',
   }
 
   const tabItems: TabsItem[] = [
@@ -355,6 +383,28 @@
       .replace(/-+/g, '-')
       .trim()
   }
+
+  watch(
+    () => productForm.value.coverImageFile,
+    newFile => {
+      if (newFile) {
+        productForm.value.coverImage = ''
+      }
+    }
+  )
+
+  watch(
+    () => productForm.value.productFile,
+    newFile => {
+      if (newFile) {
+        productForm.value.fileName = newFile.name
+        productForm.value.mimeType = newFile.type
+        productForm.value.fileSize = newFile.size
+        productForm.value.fileSizeDisplay = formatFileSize(newFile.size)
+        productForm.value.fileUrl = ''
+      }
+    }
+  )
 
   watch(
     () => productForm.value.name,
@@ -443,6 +493,18 @@
     }
   }
 
+  const uploadFile = async (file: File): Promise<string> => {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await $fetch<{ url: string }>('/api/upload', {
+      method: 'POST',
+      body: formData,
+    })
+
+    return response.url
+  }
+
   const handleSubmit = async () => {
     if (!validateForm()) {
       return
@@ -452,9 +514,37 @@
       isSubmitting.value = true
       errorMessage.value = ''
 
+      let coverImageUrl = productForm.value.coverImage
+      let fileUrl = productForm.value.fileUrl
+
+      if (productForm.value.coverImageFile) {
+        coverImageUrl = await uploadFile(productForm.value.coverImageFile)
+      }
+
+      if (productForm.value.productFile) {
+        fileUrl = await uploadFile(productForm.value.productFile)
+      }
+
       const submitData = {
-        ...productForm.value,
+        name: productForm.value.name,
+        slug: productForm.value.slug,
+        tags: productForm.value.tags,
+        version: productForm.value.version,
+        categoryId: productForm.value.categoryId,
+        isActive: productForm.value.isActive,
+        isFeatured: productForm.value.isFeatured,
+        shortDescription: productForm.value.shortDescription,
+        description: productForm.value.description,
+        coverImage: coverImageUrl,
+        changeLog: productForm.value.changeLog,
+        fileUrl,
+        fileName: productForm.value.fileName,
+        mimeType: productForm.value.mimeType,
+        fileSize: productForm.value.fileSize,
         price: Math.round(productForm.value.price * 100),
+        isOneTime: productForm.value.isOneTime,
+        isSubscription: productForm.value.isSubscription,
+        subscriptionInterval: productForm.value.subscriptionInterval,
       }
 
       if (isEditMode.value && editingProduct.value) {

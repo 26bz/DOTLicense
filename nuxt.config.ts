@@ -3,8 +3,20 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
-  modules: ['@nuxt/eslint', '@nuxt/ui', 'nuxt-auth-utils', // '@pinia/nuxt',
-  '@prisma/nuxt', 'nuxt-authorization', '@nuxtjs/turnstile', '@nuxt/scripts', 'nuxt-security', '@nuxt/image', '@nuxtjs/seo', 'nuxt-echarts'],
+  modules: [
+    '@nuxt/eslint',
+    '@nuxt/ui',
+    'nuxt-auth-utils', // '@pinia/nuxt',
+    '@prisma/nuxt',
+    'nuxt-authorization',
+    '@nuxtjs/turnstile',
+    '@nuxt/scripts',
+    'nuxt-security',
+    '@nuxt/image',
+    '@nuxtjs/seo',
+    'nuxt-echarts',
+    'nuxt-file-storage',
+  ],
   nitro: {
     prerender: {
       routes: ['/sitemap.xml'],
@@ -92,7 +104,7 @@ export default defineNuxtConfig({
       throwError: true,
     },
     corsHandler: {
-      origin: 'http://localhost:3000',
+      origin: 'http://localhost:3000', // TODO: Update to production URL
       methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
       preflight: {
         statusCode: 204,
@@ -117,8 +129,11 @@ export default defineNuxtConfig({
     },
     sri: true,
   },
-    echarts: {
-    charts: ['BarChart'],
+  fileStorage: {
+    mount: process.env.FILE_STORAGE_MOUNT || './server/files',
+  },
+  echarts: {
+    charts: ['BarChart', 'LineChart'],
     components: ['DatasetComponent', 'GridComponent', 'TooltipComponent'],
   },
 })

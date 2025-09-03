@@ -1,6 +1,7 @@
 import prisma from '~~/lib/prisma'
 import { registerSchema } from '#shared/schemas/auth'
 import bcrypt from 'bcrypt'
+import { logActivity } from '~~/server/utils/activity'
 
 export default defineEventHandler(async event => {
   const body = await readBody(event)
@@ -47,6 +48,14 @@ export default defineEventHandler(async event => {
       role: user.role,
     },
     loggedInAt: new Date(),
+  })
+
+  await logActivity(event, {
+    userId: user.id,
+    type: 'REGISTRATION',
+    description: 'User registered successfully',
+    resourceId: user.id.toString(),
+    resourceType: 'user',
   })
 
   return {

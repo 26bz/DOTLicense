@@ -29,6 +29,48 @@ enum SubscriptionStatus {
   TRIAL
 }
 
+enum ActivityType {
+  LOGIN
+  LOGOUT
+  REGISTRATION
+  EMAIL_VERIFIED
+  PASSWORD_CHANGED
+  PASSWORD_RESET_REQUESTED
+  PROFILE_UPDATED
+  NEWSLETTER_SUBSCRIBED
+  NEWSLETTER_UNSUBSCRIBED
+  PURCHASE_INITIATED
+  PURCHASE_COMPLETED
+  PURCHASE_FAILED
+  PURCHASE_REFUNDED
+  SUBSCRIPTION_CREATED
+  SUBSCRIPTION_CANCELED
+  SUBSCRIPTION_RENEWED
+  PRODUCT_VIEWED
+  PRODUCT_DOWNLOADED
+  PRODUCT_REVIEWED
+  PRODUCT_CREATED
+  PRODUCT_UPDATED
+  PRODUCT_DELETED
+  SERVICE_CREATED
+  SERVICE_UPDATED
+  SERVICE_DELETED
+  ANNOUNCEMENT_CREATED
+  ANNOUNCEMENT_UPDATED
+  ANNOUNCEMENT_DELETED
+  CATEGORY_CREATED
+  CATEGORY_UPDATED
+  CATEGORY_DELETED
+  CART_ITEM_ADDED
+  CART_ITEM_REMOVED
+  CART_CLEARED
+  LICENSE_ACTIVATED
+  LICENSE_REVOKED
+  ACCOUNT_SUSPENDED
+  ACCOUNT_REACTIVATED
+  DATA_EXPORT_REQUESTED
+}
+
 model User {
   id                      Int       @id @default(autoincrement())
   firstName               String
@@ -68,6 +110,7 @@ model User {
   licenses      License[]
   Review        Review[]
   session       Session[]
+  activityLogs  ActivityLog[]
 
   @@index([email])
   @@index([role])
@@ -276,6 +319,33 @@ model Session {
   @@index([userId])
   @@index([token])
   @@index([expiresAt])
+}
+
+model ActivityLog {
+  id           String       @id @default(cuid())
+  userId       Int
+  type         ActivityType
+  description  String?
+  metadata     Json?
+  ipAddress    String?
+  userAgent    String?
+  resourceId   String?
+  resourceType String?
+  sessionId    String?
+  location     String?
+  device       String?
+  browser      String?
+  os           String?
+  referrer     String?
+  createdAt    DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([resourceId, resourceType])
 }
 
 model Announcement {

@@ -1,5 +1,12 @@
 import { z } from 'zod'
 
+export const userQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(20),
+  search: z.string().optional(),
+  role: z.enum(['USER', 'TEAM', 'ADMIN']).optional(),
+})
+
 export const updateProfileSchema = z.object({
   firstName: z.string().trim().min(2, { message: 'Please enter your first name (minimum 2 characters)' }),
   lastName: z.string().trim().min(2, { message: 'Please enter your last name (minimum 2 characters)' }),
@@ -58,3 +65,4 @@ export const userSchema = z.object({
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>
 export type User = z.infer<typeof userSchema>
+export type UserQuery = z.infer<typeof userQuerySchema>
